@@ -31,6 +31,7 @@ class _UserAuthState extends State<UserAuth> {
       Get.showSnackbar( const GetSnackBar(
           backgroundColor: Colors.red,
           messageText:Text('Signup Successfully'),
+        duration: Duration(seconds: 3),
       ));
     } catch(e){
     Get.showSnackbar(const GetSnackBar(

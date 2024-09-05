@@ -1,9 +1,8 @@
 import 'dart:io';
 
-// import 'package:chatapp_yt/dataModel/userprofile.dart';
-// import 'package:chatapp_yt/database_services.dart';
-// import 'package:chatapp_yt/pages/homepage.dart';
- import 'package:realtime_chat_app/storageservices.dart';
+import 'package:realtime_chat_app/dataModel/userprofile.dart';
+import 'package:realtime_chat_app/database_services.dart';
+import 'package:realtime_chat_app/storageservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Resgistrationform extends StatefulWidget {
   const Resgistrationform({super.key});
-
   @override
   State<Resgistrationform> createState() => _ResgistrationformState();
 }
@@ -22,12 +20,13 @@ class _ResgistrationformState extends State<Resgistrationform> {
   File? selectedimg;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // final StorageSerivces _storage = StorageSerivces();
-  // final Database _database = Database();
+  final StorageSerivces _storage = StorageSerivces();
+  final Database _database = Database();
 
   TextEditingController namecont = TextEditingController();
   TextEditingController emailcont = TextEditingController(
       text: '${FirebaseAuth.instance.currentUser!.email}');
+
   void pickimg() async {
     final Pickedimg = await _picker.pickImage(source: ImageSource.gallery);
     if (Pickedimg != null) {
@@ -42,37 +41,35 @@ class _ResgistrationformState extends State<Resgistrationform> {
   //   return pref.setBool('isLoggedIn', true);
   // }
   //
-  // Future<void> registerAccount() async {
-  //   if (selectedimg != null && namecont.text.isNotEmpty) {
-  //     try {
-  //       final uid = _auth.currentUser!.uid;
-  //       final download =
-  //       await _storage.UploadImage(file: selectedimg!, uid: uid);
-  //       if (download != null) {
-  //         await _database.createuserprofile(
-  //             userProfile: UserProfile(
-  //                 uid: uid,
-  //                 name: namecont.text,
-  //                 pfpURL: download,
-  //                 phonenumber: emailcont.text));
-  //       }
-  //       await _saveloginstate();
-  //      // Get.off(() =>const HomePage());
-  //       Get.showSnackbar(const GetSnackBar(
-  //         backgroundColor: Colors.blue,
-  //         titleText: Text('Successfully registered'),
-  //         duration: Duration(seconds: 3),
-  //       ));
-  //     } catch (e) {
-  //       Get.showSnackbar(const GetSnackBar(
-  //         backgroundColor: Colors.red,
-  //         titleText: Text('Select image and Enter Name'),
-  //         duration: Duration(seconds: 3),
-  //       ));
-  //
-  //     }
-  //   }
-  // }
+  Future<void> registerAccount() async {
+    if (selectedimg != null && namecont.text.isNotEmpty) {
+      try {
+        final uid = _auth.currentUser!.uid;
+        final download = await _storage.UploadImage(file: selectedimg!, uid: uid);
+        if (download != null) {
+          await _database.createuserprofile(
+              userProfile: UserProfile(
+                  uid: uid,
+                  name: namecont.text,
+                  pfpURL: download,
+                  phonenumber: emailcont.text));
+        }
+        //       await _saveloginstate();
+        //      // Get.off(() =>const HomePage());
+        //       Get.showSnackbar(const GetSnackBar(
+        //         backgroundColor: Colors.blue,
+        //         titleText: Text('Successfully registered'),
+        //         duration: Duration(seconds: 3),
+        //       ));
+      } catch (e) {
+        Get.showSnackbar(const GetSnackBar(
+          backgroundColor: Colors.red,
+          titleText: Text('Select image and Enter Name'),
+          duration: Duration(seconds: 3),
+        ));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +104,9 @@ class _ResgistrationformState extends State<Resgistrationform> {
                       radius: 75,
                       backgroundColor: Colors.grey,
                       backgroundImage:
-                      selectedimg != null ? FileImage(selectedimg!) : null,
+                      selectedimg != null
+                          ? FileImage(selectedimg!)
+                          : null,
                       child: selectedimg == null
                           ? const Icon(
                         Icons.person,
@@ -143,7 +142,7 @@ class _ResgistrationformState extends State<Resgistrationform> {
                     width: 200,
                     child: MaterialButton(
                       onPressed: () {
-                       // registerAccount();
+                        registerAccount();
                       },
                       color: Colors.white,
                       child: const Text('Register'),
