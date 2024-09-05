@@ -31,10 +31,12 @@ class _UserAuthState extends State<UserAuth> {
       Get.showSnackbar( const GetSnackBar(
           backgroundColor: Colors.red,
           messageText:Text('Signup Successfully'),
+        duration: Duration(seconds: 3),
       ));
     } catch(e){
     Get.showSnackbar(const GetSnackBar(
     messageText: Text('&{e.toString}'),
+      duration: Duration(seconds: 3),
     ));
   }
   }
@@ -52,11 +54,11 @@ class _UserAuthState extends State<UserAuth> {
      Get.off(() => const Resgistrationform());
 
     } catch (e) {
-      // Get.showSnackbar(GetSnackBar(
-      //   backgroundColor: Colors.red,
-      //   titleText: Text("Error ${e.toString()}"),
-      //   duration: const Duration(seconds: 3),
-      // ));
+      Get.showSnackbar(GetSnackBar(
+        backgroundColor: Colors.red,
+        titleText: Text("Error ${e.toString()}"),
+        duration: const Duration(seconds: 3),
+      ));
     }
   }
 
