@@ -64,11 +64,11 @@ class _ResgistrationformState extends State<Resgistrationform> {
               ));
 
       } catch (e) {
-        Get.showSnackbar(const GetSnackBar(
-          backgroundColor: Colors.red,
-          titleText: Text('Select image and Enter Name'),
-          duration: Duration(seconds: 3),
-        ));
+        // Get.showSnackbar(const GetSnackBar(
+        //   backgroundColor: Colors.red,
+        //   titleText: Text('Select image and Enter Name'),
+        //   duration: Duration(seconds: 3),
+        // ));
       }
     }
   }
