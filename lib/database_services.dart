@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:realtime_chat_app/dataModel/messageModel.dart';
 import 'package:realtime_chat_app/dataModel/userprofile.dart';
 import 'package:realtime_chat_app/dataModel/chatModel.dart';
 
@@ -44,7 +45,7 @@ class Database {
         .snapshots();
   }
 
-   // ignore: non_constant_identifier_names
+  // ignore: non_constant_identifier_names
   String GenerateUniqueid({required String uid1, required String uid2}) {
     List uids = [uid1, uid2];
     uids.sort();
@@ -69,19 +70,19 @@ class Database {
     await docref.set(chat);
   }
 
-  // Stream<DocumentSnapshot<Chat>> getchatdata(String uid1, String uid2) {
-  //   String chatid = GenerateUniqueid(uid1: uid1, uid2: uid2);
-  //   return _chatcollection?.doc(chatid).snapshots()
-  //   as Stream<DocumentSnapshot<Chat>>;
-  // }
-  //
-  // Future<void> sendmsg(String uid1, String uid2, Message message) async {
-  //   String chatid = GenerateUniqueid(uid1: uid1, uid2: uid2);
-  //   final docref = _chatcollection!.doc(chatid);
-  //   await docref.update({
-  //     "messages": FieldValue.arrayUnion([message.toJson()])
-  //   });
-  // }
+  Stream<DocumentSnapshot<Chat>> getchatdata(String uid1, String uid2) {
+    String chatid = GenerateUniqueid(uid1: uid1, uid2: uid2);
+    return _chatcollection?.doc(chatid).snapshots()
+    as Stream<DocumentSnapshot<Chat>>;
+  }
+
+  Future<void> sendmsg(String uid1, String uid2, Message message) async {
+    String chatid = GenerateUniqueid(uid1: uid1, uid2: uid2);
+    final docref = _chatcollection!.doc(chatid);
+    await docref.update({
+      "messages": FieldValue.arrayUnion([message.toJson()])
+    });
+  }
 
 }
 
