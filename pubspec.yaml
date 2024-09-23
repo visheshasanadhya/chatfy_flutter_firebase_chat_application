@@ -45,7 +45,8 @@ dependencies:
   shared_preferences: ^2.2.3
   path: ^1.8.3
   dash_chat_2: ^0.0.20
-  #zego_uikit_prebuilt_call: ^4.12.10
+  zego_uikit_prebuilt_call: ^4.12.11
+
 
 dev_dependencies:
   flutter_test:

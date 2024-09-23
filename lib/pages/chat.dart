@@ -11,6 +11,7 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat_app/dataModel/chatModel.dart';
 import 'package:realtime_chat_app/dataModel/messageModel.dart';
+import 'package:realtime_chat_app/call_fun.dart';
 
 class Chatpage extends StatefulWidget {
   final UserProfile userProfile;
@@ -34,11 +35,11 @@ class _ChatpageState extends State<Chatpage> {
         id: widget.userProfile.uid!, firstName: widget.userProfile.name);
   }
 
-  // void callchat(bool bol) async{
-  //   final callid =await
-  //   _database.GenerateUniqueid(uid1: currentUser!.id, uid2: otheruser!.id);
-  //   Get.off(()=>CallPage(callID: callid,bol: bol,));
-  // }
+  void callchat(bool bol) async{
+    final callid =await
+    _database.GenerateUniqueid(uid1: currentUser!.id, uid2: otheruser!.id);
+    Get.off(()=>CallPage(callID: callid,bol: bol,));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +51,11 @@ class _ChatpageState extends State<Chatpage> {
         actions: [
           IconButton(
             onPressed: () {
-              },
+              callchat(true);
+            },
             icon: Icon(Icons.call),
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.video_call))
+          IconButton(onPressed: () {callchat(false);}, icon: Icon(Icons.video_call))
         ],
       ),
       body: Builderui(),
@@ -125,7 +127,7 @@ class _ChatpageState extends State<Chatpage> {
     }
   }
 
-
+  // ignore: non_constant_identifier_names
   Widget Medimsg() {
     return IconButton(
         onPressed: Pickimg,
