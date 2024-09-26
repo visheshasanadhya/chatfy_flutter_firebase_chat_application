@@ -6,41 +6,74 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:get/get.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-  //    home:UserAuth(),
-      home: FutureBuilder<bool>(
-          future: _checkifLogedIn(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasData && snapshot.data == true) {
-              return const HomePage();
-            } else {
-              return const UserAuth();
-            }
-          }));
+      home: SplashScreen(), // Show splash screen initially
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp(); // Start initialization
   }
 
-  Future<bool> _checkifLogedIn() async {
+  Future<void> _initializeApp() async {
+    // Initialize Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Check login status from SharedPreferences
+    final isLoggedIn = await _checkIfLoggedIn();
+
+    // Navigate to appropriate page based on login status
+    if (isLoggedIn) {
+      Get.off(() => const HomePage());
+    } else {
+      Get.off(() => const UserAuth());
+    }
+  }
+
+  Future<bool> _checkIfLoggedIn() async {
     final pref = await SharedPreferences.getInstance();
     return pref.getBool('isLoggedIn') ?? false;
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.deepPurple,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text(
+              'Initializing...',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

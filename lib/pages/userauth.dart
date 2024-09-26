@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'registrationpage.dart';
+import 'homepage.dart';
 
-class UserAuth extends StatefulWidget{
+class UserAuth extends StatefulWidget {
   const UserAuth({super.key});
 
   @override
@@ -11,16 +13,14 @@ class UserAuth extends StatefulWidget{
 }
 
 class _UserAuthState extends State<UserAuth> {
-
-
   bool _issignup = false;
-  TextEditingController emailcont=TextEditingController();
-  TextEditingController passcont=TextEditingController();
+  TextEditingController emailcont = TextEditingController();
+  TextEditingController passcont = TextEditingController();
   final FirebaseAuth _user = FirebaseAuth.instance;
 
-  void _toogle(){
+  void _toogle() {
     setState(() {
-      _issignup=!_issignup;
+      _issignup = !_issignup;
     });
   }
 
@@ -28,40 +28,61 @@ class _UserAuthState extends State<UserAuth> {
     try {
       UserCredential _signup = await _user.createUserWithEmailAndPassword(
           email: emailcont.text, password: passcont.text);
-      Get.showSnackbar( const GetSnackBar(
-          backgroundColor: Colors.red,
-          messageText:Text('Signup Successfully'),
-        duration: Duration(seconds: 3),
-      ));
-    } catch(e){
-    // Get.showSnackbar(const GetSnackBar(
-    // messageText: Text('&{e.toString}'),
-    //   duration: Duration(seconds: 3),
-    // ));
-  }
+
+      // Mark user as needing to complete registration
+      final pref = await SharedPreferences.getInstance();
+      await pref.setBool('needsRegistration', true);
+
+      Get.snackbar(
+        'Success',
+        'Signup Successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   Future<void> signin() async {
     try {
       UserCredential _signin = await _user.signInWithEmailAndPassword(
           email: emailcont.text, password: passcont.text);
-      Get.showSnackbar(const GetSnackBar(
+
+      // Check if the user needs to complete registration
+      final pref = await SharedPreferences.getInstance();
+      bool needsRegistration = pref.getBool('needsRegistration') ?? true;
+
+      if (needsRegistration) {
+        Get.off(() => const Resgistrationform()); // Redirect to Registration page
+      } else {
+        Get.off(() => const HomePage()); // Redirect to Home page
+      }
+
+      Get.snackbar(
+        'Success',
+        'Successfully Signed In',
         backgroundColor: Colors.blue,
-        titleText: Text('Successfully Signin'),
-        duration: Duration(seconds: 3),
-      ));
-
-     Get.off(() => const Resgistrationform());
-
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
     } catch (e) {
-      // Get.showSnackbar(GetSnackBar(
-      //   backgroundColor: Colors.red,
-      //   titleText: Text("Error ${e.toString()}"),
-      //   duration: const Duration(seconds: 3),
-      // ));
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +137,8 @@ class _UserAuthState extends State<UserAuth> {
                 TextButton(
                   onPressed: _toogle,
                   child: Text(_issignup
-                      ? 'Have and account? Signin'
-                      : "Dont's have an account? Signup"),
+                      ? 'Have an account? Signin'
+                      : "Don't have an account? Signup"),
                 )
               ],
             ),
