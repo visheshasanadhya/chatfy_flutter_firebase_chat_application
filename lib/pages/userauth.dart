@@ -18,35 +18,79 @@ class _UserAuthState extends State<UserAuth> {
   TextEditingController passcont = TextEditingController();
   final FirebaseAuth _user = FirebaseAuth.instance;
 
-  void _toogle() {
+  void _toggle() {
     setState(() {
       _issignup = !_issignup;
     });
   }
 
-  Future<void> signup() async {
-    try {
-      UserCredential _signup = await _user.createUserWithEmailAndPassword(
-          email: emailcont.text, password: passcont.text);
+  // Email validation
+  bool _isValidEmail(String email) {
+    return email.isNotEmpty && email.contains('@');
+  }
 
-      // Mark user as needing to complete registration
+  // Password validation
+  bool _isValidPassword(String password) {
+    return password.length >= 6; // Minimum length for Firebase
+  }
+
+  Future<void> signup() async {
+    if (!_isValidEmail(emailcont.text.trim())) {
+      Get.snackbar('Error', 'Please enter a valid email.',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    if (!_isValidPassword(passcont.text.trim())) {
+      Get.snackbar('Error', 'Password must be at least 6 characters.',
+          backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    try {
+      // Check if the email already exists in Firebase Auth
+      final List<String> signInMethods = await _user.fetchSignInMethodsForEmail(emailcont.text.trim());
+      if (signInMethods.isNotEmpty) {
+        Get.snackbar(
+          'Error',
+          'Email already exists. Please sign in.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      // Create a new user with email and password
+      await _user.createUserWithEmailAndPassword(
+        email: emailcont.text.trim(),
+        password: passcont.text.trim(),
+      );
+
       final pref = await SharedPreferences.getInstance();
       await pref.setBool('needsRegistration', true);
 
       Get.snackbar(
         'Success',
-        'Signup Successfully',
+        'Signup Successful',
         backgroundColor: Colors.green,
         colorText: Colors.white,
-        duration: const Duration(seconds: 3),
+      );
+
+      // Redirect to registration form after signup
+      Get.off(() => const Resgistrationform());
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar(
+        'Error',
+        e.message ?? 'An error occurred.',  // Use ?? to handle null messages
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
-        e.toString(),
+        'An unexpected error occurred.',
         backgroundColor: Colors.red,
         colorText: Colors.white,
-        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -54,16 +98,15 @@ class _UserAuthState extends State<UserAuth> {
   Future<void> signin() async {
     try {
       UserCredential _signin = await _user.signInWithEmailAndPassword(
-          email: emailcont.text, password: passcont.text);
+          email: emailcont.text.trim(), password: passcont.text.trim());
 
-      // Check if the user needs to complete registration
       final pref = await SharedPreferences.getInstance();
       bool needsRegistration = pref.getBool('needsRegistration') ?? true;
 
       if (needsRegistration) {
-        Get.off(() => const Resgistrationform()); // Redirect to Registration page
+        Get.off(() => const Resgistrationform());
       } else {
-        Get.off(() => const HomePage()); // Redirect to Home page
+        Get.off(() => const HomePage());
       }
 
       Get.snackbar(
@@ -88,7 +131,7 @@ class _UserAuthState extends State<UserAuth> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: Colors.lightBlue,
       body: _buildUi(),
       bottomNavigationBar: Container(
         alignment: Alignment.center,
@@ -131,14 +174,14 @@ class _UserAuthState extends State<UserAuth> {
                       onPressed: () {
                         _issignup ? signup() : signin();
                       },
-                      color: Colors.deepPurple,
+                      color: Colors.blue,
                       child: Text(_issignup ? 'Signup' : 'Signin'),
                     )),
                 TextButton(
-                  onPressed: _toogle,
+                  onPressed: _toggle,
                   child: Text(_issignup
-                      ? 'Have an account? Signin'
-                      : "Don't have an account? Signup"),
+                      ? 'Have and account? Signin'
+                      : "Dont's have an account? Signup"),
                 )
               ],
             ),

@@ -54,22 +54,33 @@ class _ResgistrationformState extends State<Resgistrationform> {
                   name: namecont.text,
                   pfpURL: download,
                   phonenumber: emailcont.text));
+          await _saveloginstate();
+          Get.off(() => const HomePage());
+          Get.showSnackbar(GetSnackBar(
+            backgroundColor: Colors.blue,
+            message: 'Successfully registered',
+            duration: Duration(seconds: 3),
+          ));
+        } else {
+          Get.showSnackbar(GetSnackBar(
+            backgroundColor: Colors.red,
+            message: 'Failed to upload image',
+            duration: Duration(seconds: 3),
+          ));
         }
-              await _saveloginstate();
-              Get.off(() =>const HomePage());
-              Get.showSnackbar(const GetSnackBar(
-                backgroundColor: Colors.blue,
-                titleText: Text('Successfully registered'),
-                duration: Duration(seconds: 3),
-              ));
-
       } catch (e) {
-        // Get.showSnackbar(const GetSnackBar(
-        //   backgroundColor: Colors.red,
-        //   titleText: Text('Select image and Enter Name'),
-        //   duration: Duration(seconds: 3),
-        // ));
+        Get.showSnackbar(GetSnackBar(
+          backgroundColor: Colors.red,
+          message: 'Error: ${e.toString()}',
+          duration: Duration(seconds: 3),
+        ));
       }
+    } else {
+      Get.showSnackbar(GetSnackBar(
+        backgroundColor: Colors.red,
+        message: 'Please select an image and enter your name',
+        duration: Duration(seconds: 3),
+      ));
     }
   }
 
