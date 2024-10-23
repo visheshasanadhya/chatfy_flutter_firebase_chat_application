@@ -48,6 +48,7 @@ dependencies:
   zego_uikit_prebuilt_call: ^4.12.11
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

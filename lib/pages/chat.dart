@@ -45,21 +45,41 @@ class _ChatpageState extends State<Chatpage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        centerTitle: true,
-        title: Text(widget.userProfile.name!),
+        //centerTitle: true,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,  // Keep the row's width minimal
+          children: [
+            CircleAvatar(
+              backgroundImage: widget.userProfile.pfpURL != null
+                  ? NetworkImage(widget.userProfile.pfpURL!)
+                  : null,
+              child: widget.userProfile.pfpURL == null
+                  ? const Icon(Icons.person)
+                  : null,
+            ),
+            const SizedBox(width: 8), // Space between the profile picture and name
+            Text(widget.userProfile.name!),
+          ],
+        ),
         actions: [
           IconButton(
             onPressed: () {
               callchat(true);
             },
-            icon: Icon(Icons.call),
+            icon: const Icon(Icons.call),
           ),
-          IconButton(onPressed: () {callchat(false);}, icon: Icon(Icons.video_call))
+          IconButton(
+            onPressed: () {
+              callchat(false);
+            },
+            icon: const Icon(Icons.video_call),
+          ),
         ],
       ),
       body: Builderui(),
     );
   }
+
 
   Widget Builderui() {
     return StreamBuilder(

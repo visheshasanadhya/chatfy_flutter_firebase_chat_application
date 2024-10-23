@@ -10,13 +10,13 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Resgistrationform extends StatefulWidget {
-  const Resgistrationform({super.key});
+class Registrationform extends StatefulWidget {
+  const Registrationform({super.key});
   @override
-  State<Resgistrationform> createState() => _ResgistrationformState();
+  State<Registrationform> createState() => _RegistrationformState();
 }
 
-class _ResgistrationformState extends State<Resgistrationform> {
+class _RegistrationformState extends State<Registrationform> {
   final ImagePicker _picker = ImagePicker();
   File? selectedimg;
   final FirebaseAuth _auth = FirebaseAuth.instance;

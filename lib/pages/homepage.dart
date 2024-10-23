@@ -7,6 +7,7 @@ import 'package:realtime_chat_app/pages/chat.dart';
 import 'package:realtime_chat_app/pages/chatTile.dart';
 import 'package:realtime_chat_app/pages/userauth.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   UserProfile? _profile;
   bool _isLoading = true;
+
 
   Future<void> _loadimg() async {
     if (currentuser != null) {
@@ -47,26 +49,27 @@ class _HomePageState extends State<HomePage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          elevation: 4.0,
+          elevation: 8.0,
           backgroundColor: Colors.white,
           centerTitle: true,
-          title: Text(
+          title: const Text(
             "Conversations",
             style: TextStyle(
               fontWeight: FontWeight.w600,
             ),
           ),
-
-          leading:Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-
+          leading: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  // Safely open the drawer
+                  Scaffold.of(context).openDrawer();
+                },
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   backgroundImage: _profile?.pfpURL != null
-                      ? NetworkImage(
-                    _profile!.pfpURL!,
-                  )
+                      ? NetworkImage(_profile!.pfpURL!)
                       : null,
                   child: _profile?.pfpURL == null
                       ? const Icon(Icons.person)
@@ -74,21 +77,22 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+          ),
+
           actions: [
             IconButton(
-                onPressed: () {
-                  user.signOut();
-                  Get.off(() => const UserAuth());
-                },
-                icon: const Icon(
-                  Icons.logout,
-                  size: 30,
-                  color: Colors.black,
-                ))
+              onPressed: () {
+                user.signOut();
+                Get.off(() => const UserAuth());
+              },
+              icon: const Icon(
+                Icons.logout,
+                size: 30,
+                color: Colors.black,
+              ),
+            )
           ],
         ),
-
-
 
         // Add Drawer here
         drawer: Drawer(
@@ -107,16 +111,24 @@ class _HomePageState extends State<HomePage> {
                       : null,
                 ),
               ),
+
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
                 onTap: () {
                   // Handle settings tap
                 },
               ),
               ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Logout'),
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  // Handle settings tap
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
                 onTap: () {
                   user.signOut();
                   Get.off(() => const UserAuth());
@@ -130,8 +142,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   Widget Chatlist(BuildContext context) {
     return StreamBuilder(
+
         stream: _database.getuserProfiles(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
